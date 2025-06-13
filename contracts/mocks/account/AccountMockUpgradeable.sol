@@ -3,13 +3,13 @@
 pragma solidity ^0.8.27;
 
 import {Account} from "@openzeppelin/contracts/account/Account.sol";
-import {AccountERC7579Upgradeable} from "../../account/extensions/AccountERC7579Upgradeable.sol";
-import {AccountERC7579HookedUpgradeable} from "../../account/extensions/AccountERC7579HookedUpgradeable.sol";
+import {AccountERC7579Upgradeable} from "../../account/extensions/draft-AccountERC7579Upgradeable.sol";
+import {AccountERC7579HookedUpgradeable} from "../../account/extensions/draft-AccountERC7579HookedUpgradeable.sol";
 import {ERC721HolderUpgradeable} from "../../token/ERC721/utils/ERC721HolderUpgradeable.sol";
 import {ERC1155HolderUpgradeable} from "../../token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 import {ERC4337Utils} from "@openzeppelin/contracts/account/utils/draft-ERC4337Utils.sol";
-import {ERC7739Upgradeable} from "../../utils/cryptography/signers/ERC7739Upgradeable.sol";
-import {ERC7821} from "@openzeppelin/contracts/account/extensions/ERC7821.sol";
+import {ERC7739Upgradeable} from "../../utils/cryptography/signers/draft-ERC7739Upgradeable.sol";
+import {ERC7821} from "@openzeppelin/contracts/account/extensions/draft-ERC7821.sol";
 import {MODULE_TYPE_VALIDATOR} from "@openzeppelin/contracts/interfaces/draft-IERC7579.sol";
 import {PackedUserOperation} from "@openzeppelin/contracts/interfaces/draft-IERC4337.sol";
 import {AbstractSigner} from "@openzeppelin/contracts/utils/cryptography/signers/AbstractSigner.sol";
@@ -19,6 +19,7 @@ import {SignerRSAUpgradeable} from "../../utils/cryptography/signers/SignerRSAUp
 import {SignerERC7702} from "@openzeppelin/contracts/utils/cryptography/signers/SignerERC7702.sol";
 import {SignerERC7913Upgradeable} from "../../utils/cryptography/signers/SignerERC7913Upgradeable.sol";
 import {MultiSignerERC7913Upgradeable} from "../../utils/cryptography/signers/MultiSignerERC7913Upgradeable.sol";
+import {MultiSignerERC7913WeightedUpgradeable} from "../../utils/cryptography/signers/MultiSignerERC7913WeightedUpgradeable.sol";
 import {Initializable} from "../../proxy/utils/Initializable.sol";
 
 abstract contract AccountMockUpgradeable is Initializable, Account, ERC7739Upgradeable, ERC7821, ERC721HolderUpgradeable, ERC1155HolderUpgradeable {
@@ -175,6 +176,25 @@ abstract contract AccountERC7579HookedMockUpgradeable is Initializable, AccountE
     }
 }
 
+abstract contract AccountERC7913MockUpgradeable is Initializable, Account, SignerERC7913Upgradeable, ERC7739Upgradeable, ERC7821, ERC721HolderUpgradeable, ERC1155HolderUpgradeable {
+    function __AccountERC7913Mock_init(bytes memory _signer) internal onlyInitializing {
+        __AccountERC7913Mock_init_unchained(_signer);
+    }
+
+    function __AccountERC7913Mock_init_unchained(bytes memory _signer) internal onlyInitializing {
+        _setSigner(_signer);
+    }
+
+    /// @inheritdoc ERC7821
+    function _erc7821AuthorizedExecutor(
+        address caller,
+        bytes32 mode,
+        bytes calldata executionData
+    ) internal view virtual override returns (bool) {
+        return caller == address(entryPoint()) || super._erc7821AuthorizedExecutor(caller, mode, executionData);
+    }
+}
+
 abstract contract AccountMultiSignerMockUpgradeable is Initializable, Account, MultiSignerERC7913Upgradeable, ERC7739Upgradeable, ERC7821, ERC721HolderUpgradeable, ERC1155HolderUpgradeable {
     function __AccountMultiSignerMock_init(bytes[] memory signers, uint64 threshold) internal onlyInitializing {
         __AccountMultiSignerMock_init_unchained(signers, threshold);
@@ -195,13 +215,22 @@ abstract contract AccountMultiSignerMockUpgradeable is Initializable, Account, M
     }
 }
 
-abstract contract AccountERC7913MockUpgradeable is Initializable, Account, SignerERC7913Upgradeable, ERC7739Upgradeable, ERC7821, ERC721HolderUpgradeable, ERC1155HolderUpgradeable {
-    function __AccountERC7913Mock_init(bytes memory _signer) internal onlyInitializing {
-        __AccountERC7913Mock_init_unchained(_signer);
+abstract contract AccountMultiSignerWeightedMockUpgradeable is
+    Initializable, Account,
+    MultiSignerERC7913WeightedUpgradeable,
+    ERC7739Upgradeable,
+    ERC7821,
+    ERC721HolderUpgradeable,
+    ERC1155HolderUpgradeable
+{
+    function __AccountMultiSignerWeightedMock_init(bytes[] memory signers, uint64[] memory weights, uint64 threshold) internal onlyInitializing {
+        __AccountMultiSignerWeightedMock_init_unchained(signers, weights, threshold);
     }
 
-    function __AccountERC7913Mock_init_unchained(bytes memory _signer) internal onlyInitializing {
-        _setSigner(_signer);
+    function __AccountMultiSignerWeightedMock_init_unchained(bytes[] memory signers, uint64[] memory weights, uint64 threshold) internal onlyInitializing {
+        _addSigners(signers);
+        _setSignerWeights(signers, weights);
+        _setThreshold(threshold);
     }
 
     /// @inheritdoc ERC7821

@@ -51,14 +51,14 @@ contract Ownable2StepUpgradeableWithInit is Ownable2StepUpgradeable {
         __Ownable2Step_init();
     }
 }
-import "../account/extensions/AccountERC7579Upgradeable.sol";
+import "../account/extensions/draft-AccountERC7579Upgradeable.sol";
 
 contract AccountERC7579UpgradeableWithInit is AccountERC7579Upgradeable {
     constructor() payable initializer {
         __AccountERC7579_init();
     }
 }
-import "../account/extensions/AccountERC7579HookedUpgradeable.sol";
+import "../account/extensions/draft-AccountERC7579HookedUpgradeable.sol";
 
 contract AccountERC7579HookedUpgradeableWithInit is AccountERC7579HookedUpgradeable {
     constructor() payable initializer {
@@ -172,6 +172,13 @@ contract AccountERC7579HookedMockUpgradeableWithInit is AccountERC7579HookedMock
 }
 import "./account/AccountMockUpgradeable.sol";
 
+contract AccountERC7913MockUpgradeableWithInit is AccountERC7913MockUpgradeable {
+    constructor(bytes memory _signer) payable initializer {
+        __AccountERC7913Mock_init(_signer);
+    }
+}
+import "./account/AccountMockUpgradeable.sol";
+
 contract AccountMultiSignerMockUpgradeableWithInit is AccountMultiSignerMockUpgradeable {
     constructor(bytes[] memory signers, uint64 threshold) payable initializer {
         __AccountMultiSignerMock_init(signers, threshold);
@@ -179,9 +186,9 @@ contract AccountMultiSignerMockUpgradeableWithInit is AccountMultiSignerMockUpgr
 }
 import "./account/AccountMockUpgradeable.sol";
 
-contract AccountERC7913MockUpgradeableWithInit is AccountERC7913MockUpgradeable {
-    constructor(bytes memory _signer) payable initializer {
-        __AccountERC7913Mock_init(_signer);
+contract AccountMultiSignerWeightedMockUpgradeableWithInit is AccountMultiSignerWeightedMockUpgradeable {
+    constructor(bytes[] memory signers, uint64[] memory weights, uint64 threshold) payable initializer {
+        __AccountMultiSignerWeightedMock_init(signers, weights, threshold);
     }
 }
 import "./account/modules/ERC7579MockUpgradeable.sol";
@@ -868,6 +875,13 @@ contract ERC20ApprovalMockUpgradeableWithInit is ERC20ApprovalMockUpgradeable {
         __ERC20ApprovalMock_init();
     }
 }
+import "./token/ERC20BridgeableMockUpgradeable.sol";
+
+contract ERC20BridgeableMockUpgradeableWithInit is ERC20BridgeableMockUpgradeable {
+    constructor(address bridge) payable initializer {
+        __ERC20BridgeableMock_init(bridge);
+    }
+}
 import "./token/ERC20DecimalsMockUpgradeable.sol";
 
 contract ERC20DecimalsMockUpgradeableWithInit is ERC20DecimalsMockUpgradeable {
@@ -1366,6 +1380,13 @@ import "../utils/cryptography/signers/MultiSignerERC7913Upgradeable.sol";
 contract MultiSignerERC7913UpgradeableWithInit is MultiSignerERC7913Upgradeable {
     constructor() payable initializer {
         __MultiSignerERC7913_init();
+    }
+}
+import "../utils/cryptography/signers/MultiSignerERC7913WeightedUpgradeable.sol";
+
+contract MultiSignerERC7913WeightedUpgradeableWithInit is MultiSignerERC7913WeightedUpgradeable {
+    constructor() payable initializer {
+        __MultiSignerERC7913Weighted_init();
     }
 }
 import "../utils/cryptography/signers/SignerECDSAUpgradeable.sol";
