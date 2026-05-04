@@ -14,7 +14,7 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
  * * {ERC721} instances on other chains that are bridged using {BridgeERC721},
  */
 // slither-disable-next-line locked-ether
-abstract contract ERC721CrosschainUpgradeable is Initializable, ERC721Upgradeable, BridgeNonFungibleUpgradeable {
+abstract contract ERC721CrosschainUpgradeable is Initializable, BridgeNonFungibleUpgradeable, ERC721Upgradeable {
     function __ERC721Crosschain_init() internal onlyInitializing {
     }
 
